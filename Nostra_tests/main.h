@@ -14,6 +14,7 @@
 
 class Tests{
 public:
+	//// ГОТОВО
 	Tests() {
 		CreateInfo();
 		///
@@ -25,30 +26,31 @@ public:
 		CreateDir(m_result_folder_dir);
 		///
 		m_tests_dir = "nost_bin/tests/";
-		SetTestsList();
+		FillContainer(m_tests_list, m_input_file_name);
+		current_dir = m_tests_list[0];
+		m_tests_list.erase(m_tests_list.begin());
 	}
 
-	void SetTestsList() {
+	void FillContainer(std::vector<std::string> & inputVector, const std::string & inputFile) {
+		// FILL CONTINER WORKS PERFECTLY
+		std::ifstream tests_list(inputFile);
 
-		std::ifstream tests_list(m_input_file_name);
-		if (tests_list.is_open()) {
+		if (tests_list.is_open())
+		{
 			std::string test_name;
 			while (!tests_list.eof())
 			{
 				getline(tests_list, test_name);
 				if (!test_name.empty())
-					m_tests_list.push_back(test_name);
+					inputVector.push_back(test_name);
 			}
-			current_dir = m_tests_list[0];
-			m_tests_list.erase(m_tests_list.begin());
 		}
 		else
 			std::cout << m_input_file_name << " is not opened!" << std::endl;
-
-
 	}
 
 	void CreateDir(const std::string & directory) const {
+		// CREATE DIR WORKS PERFECTLY
 		if (CreateDirectory(directory.c_str(), NULL))
 			std::cout << "Directory " << directory << " created. " << std::endl;
 		else {
@@ -60,19 +62,57 @@ public:
 		}
 	}
 
-	void GetFilesList(const std::string & currentTest)
+
+	void GetFilesList(const std::string & folder,
+	std::vector<std::string> & inputAbsolutePaths, std::vector<std::string> & inputRelativePaths)
 	{
-		std::string path = m_tests_dir + currentTest + "/";
+
+	// Из пути FOLDER получает список файлов для absolute - полный путь, для relative - относительный
+		std::string path = folder + "/";
+
 		for (const auto & entry : std::filesystem::recursive_directory_iterator(path)) {
 			std::string entire = entry.path().string();
-			m_fileList.push_back(entry.path().string());
-			for (unsigned int i = 0; i < path.size(); i++)
+
+			inputAbsolutePaths.push_back(entry.path().string());
+
+			for (unsigned int i = 0; i < path.size(); i++) {
 				entire.erase(entire.begin());
-			m_currentFile.push_back(entire);
+			}
+
+			inputRelativePaths.push_back(entire);
 		}
 	}
 
-	void ChangeLibrariesPath(const std::string & bippar_path)const  {
+	void Clear() {
+		m_fileList.clear();
+		m_currentFile.clear();
+		m_par.clear();
+	}
+
+	void CreateInfo() const
+	{
+		std::ofstream info("read_me.txt");
+		info << "\tHow work this application:\n";
+		info << "\tPreviously, put this application in nostra root directory\n";
+		info << "\tFirst step:     creating application folder 'nost_bin/' in current directory. Make sure you have administrator access\n";
+		info << "\tSecond step:    reading file 'ip.dat'. This file content names of tests, that being calculate. Names precisely links to folders with input data. Assumed, that 'TN' - first test in tests list\n";
+		info << "\tThird step:     creating directory 'nost_bin/results/TN/ that will be store results files\n";
+		info << "\tThere is starts a cycle: \n";
+		info << "\tFourth step:    opening directory 'nost_bin/tests/TN', that contains test with name TN.\n";
+		info << "\tFifth step:	 reading file 'HINSTANCE.vmn' with list of file names, that will be copied in current nostra work directory\n";
+		info << "\tSixth step:	 begining of calculations - run NOSTRA.exe\n";
+		info << "\tSeventh step:   copying results files to 'nost_bin/results/', switch TN to TN+1, and back to step 3.\n";
+	}
+
+	std::vector<std::string> GetTestsList() const {
+		return m_tests_list;
+	}
+
+
+
+	//// НЕ ГОТОВО
+
+	void ChangeLibrariesPath(const std::string & bippar_path)const {
 		std::ifstream bf(bippar_path);
 		std::string current_string;
 		std::vector<std::string> temp;
@@ -94,7 +134,7 @@ public:
 			else
 				std::cout << "Can't open bippar files" << std::endl;
 		}
-		catch (std::exception & ex){
+		catch (std::exception & ex) {
 			std::cout << ex.what() << std::endl;
 		}
 
@@ -181,31 +221,7 @@ public:
 		ChangeLibrariesPath(m_par[0]);
 	}
 
-	std::vector<std::string> GetTestsList() const {
-		return m_tests_list;
-	}
-
-	void CreateInfo() const 
-	{
-		std::ofstream info("read_me.txt");
-		info << "\tHow work this application:\n";
-		info << "\tPreviously, put this application in nostra root directory\n";
-		info << "\tFirst step:     creating application folder 'nost_bin/' in current directory. Make sure you have administrator access\n";
-		info << "\tSecond step:    reading file 'ip.dat'. This file content names of tests, that being calculate. Names precisely links to folders with input data. Assumed, that 'TN' - first test in tests list\n";
-		info << "\tThird step:     creating directory 'nost_bin/results/TN/ that will be store results files\n";
-		info << "\tThere is starts a cycle: \n";
-		info << "\tFourth step:    opening directory 'nost_bin/tests/TN', that contains test with name TN.\n";
-		info << "\tFifth step:	 reading file 'HINSTANCE.vmn' with list of file names, that will be copied in current nostra work directory\n";
-		info << "\tSixth step:	 begining of calculations - run NOSTRA.exe\n";
-		info << "\tSeventh step:   copying results files to 'nost_bin/results/', switch TN to TN+1, and back to step 3.\n";
-	}
-
-	void Clear() {
-		m_fileList.clear();
-		m_currentFile.clear();
-		m_par.clear();
-	}
-
+	
 private:
 	std::string m_input_file_name;
 	std::string m_result_folder_dir;
