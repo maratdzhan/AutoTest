@@ -164,7 +164,7 @@ public:
 	{
 		std::string r,s;
 		bool t = true;
-		for (unsigned int i = stc.size()-1; i != -1; i--)
+		for (int i = static_cast<int>(r.size()); i != -1; i--)
 		{
 			if (t) {
 				if ((stc[i] != '\ ') && (stc[i] != '/') && (stc[i] != 92)) {
@@ -174,7 +174,7 @@ public:
 					t = false;
 			}
 		}
-		for (unsigned int i = r.size()-1; i !=-1; i--)
+		for (int i = static_cast<int>(r.size())-1; i !=-1; i--)
 		{
 			s += r[i];
 		}

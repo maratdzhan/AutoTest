@@ -8,7 +8,7 @@ int main() {
 	for (const auto & t : container)
 	{
 
-	//	test.Calculation(t);
+		test.Calculation(t);
 		test.CopyRes(t);
 	}
 
