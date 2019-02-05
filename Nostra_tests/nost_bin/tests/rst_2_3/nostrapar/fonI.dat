@@ -1,0 +1,25 @@
+ &fonI
+       TIME_FON_START=6305.,
+	   TIME_FON_FINISH=6400.,
+	   fon=27*0.0,
+       
+	   delT_der=4.0
+	   omega_fon=1.0
+	   TIPE_FON=1,1,1,1,1,1,21*1
+	   TIME_MOV_AZ=6300.,
+	   TIME_MOV_ZAS=6358.,
+	   TIME_STOP_ZAS=6361.
+	   
+
+  &END
+  TIPE_FON=1 -  среднии токи
+  TIPE_FON=2 - экспоненциальные токи
+		
+		
+		
+		
+		
+		
+		
+		
+

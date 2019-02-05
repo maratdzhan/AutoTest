@@ -1,0 +1,36 @@
+ &devI
+ 
+
+      DEV_T_woda=0.,
+ 
+	
+	  DEV_HVZV_EXP_RG=0.,
+	  eps_R_OFF_SHL=0.,
+	  eps_Z_OFF_SHL=0.,
+       
+	
+	  eps_eff_ORSYZ_din=0.0, 
+	  APPA_din=0.0,
+	  TAPPA_din=0.0,
+	 
+          del_ALKCT=-0.07   ! Basic relative changes in the conductivity of the gas gap
+          del_ALTOPT=-0.30 ! Basic relative changes in the thermal conductivity of fuel
+          del_CTOPT=-0.05 ! Basic relative changes in the heat capacity of fuel
+         
+          del_ALKCT=-0.05
+          del_ALTOPT=0.30
+          del_CTOPT=-0.05
+
+          KEY_GRAN=0  !    KEY_GRAN - attempt to account of dependences of radial boundary conditions from high (moderator temparetchare) 
+           ! if KEY_GRAN=1 - there is account
+          alf_gran=3.
+          N_C=5 ! Number steps by heat capacity of fue variations
+          N_ALTOPT=5 ! Number steps by ALTOPT variations
+          N_ALKCT=9 ! Number steps by ALKCT variations
+          sig_CTOPT=0.07,
+          sig_ALTOPT=0.07,
+          sig_ALKCT=0.07 
+    
+  &END
+  
+

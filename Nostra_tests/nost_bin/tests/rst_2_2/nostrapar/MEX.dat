@@ -1,0 +1,185 @@
+ &MEX
+  
+  NAMBER_STEP_DEV=1,
+  N_PARAM=638,
+  N_START=2,
+  KEY_SUSA=1,
+  N_DEV_RO=4,
+  time_DEV_RO=50,100,150,205,200,130,150,170,190,210,230,250,
+  A_method=0.06,
+  end_n_mod=158, 
+  a_dev_KBES_calc=0.005,
+  a_dev_M2=0.02
+  a_dev_KBES_GET_CORE=0.005,
+  a_DRR=0.1,
+  a_Dzz=0.15,
+  a1_bound=0.0,
+  a2_bound=0.0,
+  a3_bound=0.0,
+  a_SHLAKI_INT=0.01,
+  a_SHLAKI_Z=0.005,
+  a_SHLAKI_BURN=0.01,
+  a_SHLAKI_LOK=0.01,
+  a_ORSYZ=0.1,
+  a_eps_Z_IK=0.15,
+  a_eps_NK_IK=0.10,
+  A_EPS_PRISE=0.1,
+  a_dev_KBES_MEX=0.002,
+  a_mex_ORSYZ=0.01,
+  base_up=0.8,
+  
+  KEY_STEP_W=0, !KEY_STEP_W - КЛЮЧ ИСПОЛЬЗОВАНИЯ ПОЛОЧКИ ВЫДЕРЖКИ ПРИ ПОДЪЕМЕ МОЩНОСТИ
+  W_STEPPP=75., !W_STEP - УРОВЕНЬ МОЩНОСТИ ПОЛОЧКИ ДЛЯ ВЫДЕРЖКИ
+  STEP_W_TIME=10800., !STEP_W_TIME - ВРЕМЯ УДЕРЖАНИЯ ПОЛОЧКИ МОЩНОСТИ ПРИ ПОДЪЕМЕ МОЩНОСТИ
+
+  base_down=0.4,
+  a_temp_input=1.,
+  A_EPS_BETA=0.04,
+  A_rate_bor_lin_UP=0.05,
+  A_rate_bor_lin_DOWN=-0.05,
+  T_START_1=100.,
+  T_START_2=200.,
+  H_FINISH_1=40.,
+  H_FINISH_2=30.,
+  GIST_START_DOWN=0.4,
+  GIST_START_UP=0.2,
+  GIST_FINISH_DOWN=0.4,
+  GIST_FINISH_UP=0.2,
+  a_1_H=0.1,
+  a_2_H=0.9,
+  tangent_base_max=0.8,
+  tangent_base_min=0.3,
+  a__fon_up=0.01,
+  a__fon_down=0.001,
+  a__car=0.0001, 
+ 
+  a_AKBT=0.,
+  a_TRHR=0.,
+
+  SIG_SIG1=0.15,
+  SIG_SIG2=0.02,
+  SIG_POISON=0.007,
+  SIG_DTK1=0.000000433,
+  SIG_DTK2=0.00001299,   
+
+  M_ALXE=0.0022,
+  M_ALJOD=0.0055,
+
+  a_kor_AKBT = 0.02,
+  A__AKBT = 0.01,
+  a_kor_TRHR = 0.02,
+  A__TRHR = 1.0,
+  a_kor_G_TGID = 0.02,
+  A_G_TGID = 0.01,
+  a_kor_HST = 0.02,
+  A_HST = 10,
+  error_DPZ=0.05,
+
+  KEY_MEX_CALC_DEV=1,1,1,
+  
+ 
+  A1_TIPE=1.,
+  A2_TIPE=1.
+
+
+
+
+  a_W_CHEN=75.,
+  b_W_CHEN=100.,
+  
+ a_TIME_W_CHEN=32400.,
+
+ a_REL_eps_LAM_fuel=0.05,
+ a_REL_eps_R_int_cladding=0.05,
+ a_REL_eps_R_pellet_big=0.05,
+ a_REL_eps_R_pellet_end=0.05,
+ a_REL_eps_R_pellet_free=0.05,
+ a_REL_eps_gep=0.07,
+
+ a_ALKCT=0.05,
+ 
+ a_sigx=0.025
+ b_sigx=0.0
+ 
+ sig_XE_DT=-0.001
+ 
+ 
+ a_appa=0.1,
+ a_tappa=0.075,
+ 
+ M_AP9=-0.05,
+ SIG_AP9=0.025	
+ 	
+ KBTG_X_min=40.,
+ KBTG_X_max=100.,
+ W_RATE_DOWN=4   
+ W_RATE_UP=4     
+ dW_lack_of_knowledge=0.02,	
+ T_input_down=294.2,	
+ T_input_up=299.7,	
+ G__down=850.0,	
+ G__up=910.0,	
+
+ P__down=160.08E5,	
+ P__up=166.68E5,	
+ OFF_stat_MIN=7.,	
+ OFF_stat_MAX=10.,	
+ HVZVO_X_min_start=187.,
+
+ HVZVO_X_max_start=336.6,
+ HVZVO_X_min_st=261.8,
+ HVZVO_X_max_st=336.6,
+
+ UP_BOUND_QL=1.07     !MAXIMUM QL PRI RAS4ETE OSHIBKI OPERATORA
+ DOWN_BOUND_QL=0.7    !MINIMUM QL PRI RAS4ETE OSHIBKI OPERATORA
+ ql_max_aim=1.0       !CELEVOI QL DO KOTOROGO PROISHIDIT REGULIROVANIE 
+ ql_max_reg=1.02      !QL PRI KOTOROM INICIIRUETSIYA REGULIROVANIE
+ ql_max_mov=0.87      !QL KOTORII ISPOLSUETSTYA V CRITV PRI REGULIROVANII
+ 
+ nICC_F1=6
+ ICC_F1=
+ 1 5  10  15  20  25  94*1000
+
+ K_R_DOP=1.57,
+ HVZVO_X_max_reg=90.,
+ HVZVO_X_min_reg=50.,
+ TIPE_XENON_DEV=4,
+ a_ALKCT=0.05,
+ a_PDZ=0.05
+ a_TUS=0.05
+!       METHRICAL ANALYZIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ KEY_MA=0
+
+!       annealing !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ KEY_Simulated_annealing=0  ! 1 - нормальное регулирование; 2 ошибка s1; 3 -bourn dilution 
+ NN_CALC=10
+ coding_param(1)=1, ! param(297)- исход. уровень мощности
+ coding_param(2)=1, ! param(298) - промежуточный уровень мощности 
+ coding_param(3)=1, ! param(299) - время работы на промежуточном уровне
+ coding_param(4)=1, ! param(304) - допустимый офсет
+ coding_param(5)=1, ! param(305) - положение ОР СУЗ в стационарном состоянии
+ coding_param(6)=1, ! param(306) - положение ОР СУЗ при расчете стационарного офсета
+ coding_param(7)=1, ! param(307) - положение ОР СУЗ при снижении мощности
+ coding_param(8)=1, ! param(308) - темп снижения мощности
+ coding_param(9)=1, ! param(309) - темп подъема мощности
+ coding_param(10)=1, ! param(289) - appa
+ coding_param(11)=1, ! param(290) - tappa
+ coding_param(12)=1, ! param(291) - sigx
+ coding_param(13)=1, ! param(244) - граничные условия del_drr
+ coding_param(14)=1, ! param(245) - граничные условия del_dzz
+ coding_param_reg=1, ! эффективность ОР СУЗ
+  Key_prob=1,  ! Key_prob=1 - усеченное распределение Коши
+  Key_Tem=1,   ! Key_Tem=1-линейная зависимость температуры с TEM_MAX и TEM_MIN Key_Tem=2-обратный корень степени n_TEM
+  n_TEM=4,     ! корневая зависимость температуры
+  TEM_MAX=0.2,  ! максимальная температура для Key_Tem=1,2
+  TEM_MIN=0.01  ! минимальная температура при Key_Tem=1 и  NAMBER_STEP_DEV
+  Kr_dop=1.44,  ! 1.49 для 3 ком   1.38 для 6 ком
+  KEY_CONSERV_PROF=0 
+  &END  
+
+! KEY_CONSERV_PROF для подтягивания мощности горячего твэла до k_r_dop при поиске консервативных профилей. 
+ !KEY_CONSERV_PROF=0 подтягивания нет; 1 - подтягивание профиля во всех ТВС; 2 - подтягивание профиля в самой горячей ТВС; 
+ 
+ 
+
+  
