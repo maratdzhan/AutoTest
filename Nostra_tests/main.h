@@ -11,7 +11,6 @@
 #include <map>
 
 
-
 class Tests{
 public:
 	//// ГОТОВО
@@ -26,33 +25,41 @@ public:
 		CreateDir(m_result_folder_dir);
 		///
 		m_tests_dir = "nost_bin/tests/";
-		FillContainer(m_tests_list, m_input_file_name);
-		current_dir = m_tests_list[0];
+		FillContainer(m_input_file_name);
+		m_current_dir = m_tests_list[0];
 		m_tests_list.erase(m_tests_list.begin());
+		
+
+		CreateDir("REZ");
+		CreateDir("REZ/REZ");
+		CreateDir("REZ/REZ_BAYES");
+		CreateDir("REZ/REZ_BURNUP");
+		CreateDir("REZ/REZ_DATA");
+		CreateDir("REZ/REZ_DATA_EXCH");
+		CreateDir("REZ/REZ_XENON");
+
 	}
 
-	void FillContainer(std::vector<std::string> & inputVector, const std::string & inputFile) {
-		// FILL CONTINER WORKS PERFECTLY
-		std::ifstream tests_list(inputFile);
-
-		if (tests_list.is_open())
+	void CreateFolders(std::string addictor) const
+	{
+		std::ifstream ifs;
+		for (unsigned int i = 0; i < m_absoluteFileList.size(); ++i)
 		{
-			std::string test_name;
-			while (!tests_list.eof())
-			{
-				getline(tests_list, test_name);
-				if (!test_name.empty())
-					inputVector.push_back(test_name);
+			ifs.open(m_absoluteFileList[i]);
+			if (ifs.is_open())
+				ifs.close();
+			else {
+				CreateDir(addictor+m_relativeFileList[i]);
 			}
+
 		}
-		else
-			std::cout << m_input_file_name << " is not opened!" << std::endl;
+		std::cout << std::endl;
 	}
 
 	void CreateDir(const std::string & directory) const {
 		// CREATE DIR WORKS PERFECTLY
 		if (CreateDirectory(directory.c_str(), NULL))
-			std::cout << "Directory " << directory << " created. " << std::endl;
+			std::cout << "- Directory " << directory << " created. " << std::endl;
 		else {
 			std::cout << GetLastError() <<" ";
 			if (GetLastError() == ERROR_ALREADY_EXISTS)
@@ -62,31 +69,25 @@ public:
 		}
 	}
 
-
-	void GetFilesList(const std::string & folder,
-	std::vector<std::string> & inputAbsolutePaths, std::vector<std::string> & inputRelativePaths)
+	void GetFilesList(const std::string & folder)
 	{
+		std::string path = folder+char(92);
+		try {
+			for (const auto & entry : std::filesystem::recursive_directory_iterator(path)) {
+				std::string entire = entry.path().string();
 
-	// Из пути FOLDER получает список файлов для absolute - полный путь, для relative - относительный
-		std::string path = folder + "/";
+				m_absoluteFileList.push_back(entry.path().string());
 
-		for (const auto & entry : std::filesystem::recursive_directory_iterator(path)) {
-			std::string entire = entry.path().string();
+				for (unsigned int i = 0; i < path.size(); i++) {
+					entire.erase(entire.begin());
+				}
 
-			inputAbsolutePaths.push_back(entry.path().string());
-
-			for (unsigned int i = 0; i < path.size(); i++) {
-				entire.erase(entire.begin());
+				m_relativeFileList.push_back(entire);
 			}
-
-			inputRelativePaths.push_back(entire);
 		}
-	}
-
-	void Clear() {
-		m_fileList.clear();
-		m_currentFile.clear();
-		m_par.clear();
+		catch (std::exception& ex2){
+			std::cout << ex2.what() << std::endl;
+		}
 	}
 
 	void CreateInfo() const
@@ -108,117 +109,172 @@ public:
 		return m_tests_list;
 	}
 
-
-
-	//// НЕ ГОТОВО
-
-	void ChangeLibrariesPath(const std::string & bippar_path)const {
-		std::ifstream bf(bippar_path);
-		std::string current_string;
-		std::vector<std::string> temp;
+	void ChangeLibrariesPath() const {
 		try {
-			if (bf.is_open())
-			{
-				while (!bf.eof()) {
-					getline(bf, current_string);
-					if (current_string.find("NAMCON") != -1)
-						temp.push_back(" NAMCON=" + m_par.at(1) + "\n");
-					else
-						temp.push_back(current_string + "\n");
-				}
-				bf.close();
-				std::ofstream bf(bippar_path);
-				for (const auto & item : temp)
-					bf << item;
-			}
-			else
-				std::cout << "Can't open bippar files" << std::endl;
-		}
-		catch (std::exception & ex) {
-			std::cout << ex.what() << std::endl;
-		}
-
-		bf.close();
-	}
-
-	void CopyResults(const std::string&currentState)
-	{
-		// 1. Создать список файлов для копирования
-		// 2. Создать директории в которые будет происходить копирование
-		// 3. Скопировать
-		///
-		//// 1.
-		Clear();
-		std::string safe_result_Path = m_result_folder_dir + currentState+"/";
-		std::string nostra_work_path = current_dir + "REZ" + "/";
-		CreateDir(safe_result_Path);
-		CreateDir(safe_result_Path + "REZ/");
-
-		std::string entire;
-		for (const auto & entry : std::filesystem::recursive_directory_iterator(nostra_work_path)) {
-			entire = entry.path().string();
-			savings.push_back(entire);
-			for (unsigned int i = 0; i < current_dir.size(); i++)
-				entire.erase(entire.begin());
-			m_currentFile.push_back(safe_result_Path + entire);
-		}
-		///
-		//// 2.
-		for (unsigned int i = 0; i < savings.size(); i++) {
-			std::string _old = savings[i];
-			std::string _new = m_currentFile[i];
-			int err_code = static_cast<int>(CopyFile(_old.c_str(), _new.c_str(), FALSE));
-			if (err_code == 1) {
-				std::cout << std::fixed << std::setprecision(25) << m_currentFile[i] << " ";
-				std::cout << " ... OK";
-			}
-			else {
-				if (static_cast<int>(GetLastError()) == 5) {
-					std::cout << "error " << std::fixed << std::setprecision(25) << _new << " is folder\n";
-					CreateDir(_new);
+			std::ifstream bf(m_par.at("BIPPAR"));
+			std::string current_string;
+			std::vector<std::string> temp;
+			try {
+				if (bf.is_open())
+				{
+					while (!bf.eof()) {
+						getline(bf, current_string);
+						if (current_string.find("NAMCON") != -1)
+						{
+							temp.push_back("NAMCON='" + m_current_dir +
+								GetLibrary(current_string) + "',\n");
+						}
+						else
+							temp.push_back(current_string + "\n");
+					}
+					bf.close();
+					std::ofstream bf(m_par.at("BIPPAR"));
+					for (const auto & item : temp)
+						bf << item;
 				}
 				else
-					std::cout << "unknown error";
+					std::cout << "Can't open bippar files" << std::endl;
 			}
-			std::cout << std::endl;
+			catch (std::exception & ex) {
+				std::cout << ex.what() << std::endl;
+			}
 
+			bf.close();
+		}
+		catch (std::exception & ex)
+		{
+			std::cout << ex.what() << std::endl;
 		}
 	}
 
-	std::vector<std::string> FilesList()
+	void Calculation(const std::string & t)
 	{
-		m_fileList.clear();
-		m_currentFile.clear();
-		return m_fileList;
+		GetFilesList(m_tests_dir + t);
+		CreateFolders("");
+		CopyFiles(m_absoluteFileList, m_relativeFileList, "");
+		ChangeLibrariesPath();
+		int i_err = -1;
+		system("pause");
+		i_err = system("nostra.exe");
+		i_err == 0 ? (std::cout << "End of state\n\n") : (std::cout << GetLastError() << std::endl);
+		Clear();
 	}
 
-	void CopyInputFiles() {
+	std::string GetLastWord(const std::string &stc) const
+	{
+		std::string r,s;
+		bool t = true;
+		for (unsigned int i = stc.size()-1; i != -1; i--)
+		{
+			if (t) {
+				if ((stc[i] != '\ ') && (stc[i] != '/') && (stc[i] != 92)) {
+					r += stc[i];
+				}
+				else
+					t = false;
+			}
+		}
+		for (unsigned int i = r.size()-1; i !=-1; i--)
+		{
+			s += r[i];
+		}
 
-		for (unsigned int i = 0; i < m_fileList.size(); i++) {
-			// copying from _old to _new
-			std::string _old = m_fileList[i];
-			std::string _new = current_dir + m_currentFile[i];
-			std::string TU = m_currentFile[i];
+		return s;
+	}
+
+	void FoldersReplacement(const std::string t) const
+	{
+		CreateDir(m_result_folder_dir + "/" + t);
+		CreateDir(m_result_folder_dir + "/" + t + "/REZ");
+		CreateFolders(m_result_folder_dir + "/" + t + "/" + "REZ/");
+		CreateFolders(m_current_dir + "REZ/");
+
+	}
+
+	void DeleteFolder()
+	{
+		try {
+			std::string path = "REZ/";
+			std::filesystem::remove_all(path);
+		}
+		catch (std::exception & ex1) {
+			std::cout << ex1.what() << std::endl;
+		}
+	}
+
+	void CopyRes(const std::string t)
+	{
+		GetFilesList(m_current_dir+"REZ");
+		FoldersReplacement(t);
+		CopyFiles(m_absoluteFileList, m_relativeFileList, m_result_folder_dir + "/"+t + "/REZ/");
+
+
+		DeleteFolder();
+		Clear();
+	}
+
+private:
+	void FillContainer(const std::string & inputFile) {
+		// FILL CONTINER WORKS PERFECTLY
+		std::ifstream tests_list(inputFile);
+		if (tests_list.is_open())
+		{
+			std::string test_name;
+			while (!tests_list.eof())
+			{
+				getline(tests_list, test_name);
+				if (!test_name.empty())
+					m_tests_list.push_back(test_name);
+			}
+		}
+		else
+			std::cout << m_input_file_name << " is not opened!" << std::endl;
+	}
+
+	void CopyFiles(const std::vector<std::string> & source, const std::vector<std::string> & destination,
+		const std::string addictor) {
+
+		for (unsigned int i = 0; i < source.size(); i++) {
+			std::string TU = destination[i];
 			std::transform(TU.begin(), TU.end(), TU.begin(), ::toupper);
-			
-			int err_code = static_cast<int>(CopyFile(_old.c_str(), _new.c_str(), FALSE));
+			std::string dest = addictor + destination[i];
+			int err_code = static_cast<int>(CopyFile(source[i].c_str(), dest.c_str(), FALSE));
 			if (err_code == 1) {
-				std::cout << std::fixed << std::setprecision(25) << m_currentFile[i] << " ";
+				std::cout << std::fixed << std::setprecision(25) << destination[i] << " ";
 				std::cout << " ... OK";
-				if (TU.find("BIPPAR") != -1)
-					m_par[0] = _new;
+				if (TU == "BIPPAR")
+					m_par["BIPPAR"] = destination[i];
 				if (TU.find("CONST") != -1)
-					m_par[1] = _new;
+					m_par[TU] = destination[i];
 			}
 			else {
 				if (static_cast<int>(GetLastError()) == 5)
-					std::cout << "error " << std::fixed << std::setprecision(25) << _new << " is folder";
+					std::cout << "error " << std::fixed << std::setprecision(25) << source[i] << " is folder";
 				else
 					std::cout << "unknown error";
 			}
 			std::cout << std::endl;
 		}
-		ChangeLibrariesPath(m_par[0]);
+	}
+
+	std::string GetLibrary(const std::string & str) const {
+		for (auto & t : m_par)
+		{
+			std::string currentName = GetLastWord(t.second);
+			if (str.find(currentName) != -1)
+				return t.second;
+		}
+
+		throw (std::invalid_argument("NOT FIND LIBRARY"));
+		return "0";
+	}
+
+	void Clear()
+	{
+		m_folderToCreating.clear();
+		m_relativeFileList.clear();
+		m_absoluteFileList.clear();
+		m_par.clear();
 	}
 
 	
@@ -228,14 +284,14 @@ private:
 	std::string m_tests_dir;
 	
 	// Current NOSTRA DIR
-	std::string current_dir;
+	std::string m_current_dir;
 
 	// Vector with tested folders
 	std::vector<std::string> m_tests_list;
 
 	// Relate to current test files
-	std::vector<std::string> m_fileList;
-	std::vector<std::string> m_currentFile;
-	std::vector<std::string> savings;
-	std::map<int, std::string> m_par;
+	std::vector<int> m_folderToCreating;
+	std::vector<std::string> m_absoluteFileList;
+	std::vector<std::string> m_relativeFileList;
+	std::map<std::string,std::string> m_par;
 };
