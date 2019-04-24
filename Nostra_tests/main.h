@@ -197,11 +197,12 @@ public:
 		for (int i = stc.size() - 1; i != -1; i--)
 		{
 			if (t) {
-				if ((stc[i] != '\ ') && (stc[i] != '/') && (stc[i] != 92)) {
+				if ((stc[i] != '/') && (stc[i] != 92)) {
 					r += stc[i];
 				}
-				else
+				else {
 					t = false;
+				}
 			}
 		}
 		for (int i = r.size() - 1; i != -1; i--)
