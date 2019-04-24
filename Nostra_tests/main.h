@@ -9,9 +9,10 @@
 #include <iomanip>
 #include <algorithm>
 #include <map>
+#include <ctime>
 
 
-class Tests{
+class Tests {
 public:
 	//// √Œ“Œ¬Œ
 	Tests() {
@@ -28,7 +29,7 @@ public:
 		FillContainer(m_input_file_name);
 		m_current_dir = m_tests_list[0];
 		m_tests_list.erase(m_tests_list.begin());
-		
+
 
 		CreateDir("REZ");
 		CreateDir("REZ/REZ");
@@ -40,7 +41,21 @@ public:
 
 	}
 
-	void CreateFolders(std::string addictor) const
+	template<class T>
+	void ToConsole(const T & message)
+	{
+		std::string v = std::to_string(message);
+		log.push_back(v);
+		std::cout << message;
+	}
+
+	void ToConsoleS(const std::string & message)
+	{
+		log.push_back(message);
+		std::cout << message;
+	}
+
+	void CreateFolders(std::string addictor)
 	{
 		std::ifstream ifs;
 		for (unsigned int i = 0; i < m_absoluteFileList.size(); ++i)
@@ -49,45 +64,49 @@ public:
 			if (ifs.is_open())
 				ifs.close();
 			else {
-				CreateDir(addictor+m_relativeFileList[i]);
+				CreateDir(addictor + m_relativeFileList[i]);
 			}
 
 		}
-		std::cout << std::endl;
+		ToConsoleS(t_ns);
 	}
 
-	void CreateDir(const std::string & directory) const {
+	void CreateDir(const std::string & directory){
 		// CREATE DIR WORKS PERFECTLY
+		std::string t;
 		if (CreateDirectory(directory.c_str(), NULL))
-			std::cout << "- Directory " << directory << " created. " << std::endl;
-		else {
-			std::cout << GetLastError() <<" ";
-			if (GetLastError() == ERROR_ALREADY_EXISTS)
-				std::cout << "Directory " << directory << " already exists. " << std::endl;
-			else if (GetLastError() == ERROR_PATH_NOT_FOUND)
-				std::cout << "WARNING! Directory " << directory << " is not created. " << std::endl;
+		{
+			t = "- Directory " + (directory)+" created. " + t_ns;
+			ToConsoleS(t);
 		}
+		else {
+			ToConsole(GetLastError());
+			if (GetLastError() == ERROR_ALREADY_EXISTS) {
+				t = "Directory " + directory + " already exists. " + t_ns;
+				
+			}
+			else if (GetLastError() == ERROR_PATH_NOT_FOUND) {
+				t = "WARNING! Directory " + directory + " is not created. " + t_ns;
+			}
+		}
+		ToConsoleS(t);
 	}
 
 	void GetFilesList(const std::string & folder)
 	{
-		std::string path = folder+char(92);
-		try {
-			for (const auto & entry : std::filesystem::recursive_directory_iterator(path)) {
-				std::string entire = entry.path().string();
+		std::string path = folder + char(92);
+		for (const auto & entry : std::filesystem::recursive_directory_iterator(path)) {
+			std::string entire = entry.path().string();
 
-				m_absoluteFileList.push_back(entry.path().string());
+			m_absoluteFileList.push_back(entry.path().string());
 
-				for (unsigned int i = 0; i < path.size(); i++) {
-					entire.erase(entire.begin());
-				}
-
-				m_relativeFileList.push_back(entire);
+			for (unsigned int i = 0; i < path.size(); i++) {
+				entire.erase(entire.begin());
 			}
+
+			m_relativeFileList.push_back(entire);
 		}
-		catch (std::exception& ex2){
-			std::cout << ex2.what() << std::endl;
-		}
+
 	}
 
 	void CreateInfo() const
@@ -109,62 +128,73 @@ public:
 		return m_tests_list;
 	}
 
-	void ChangeLibrariesPath() const {
-		try {
-			std::ifstream bf(m_par.at("BIPPAR"));
-			std::string current_string;
-			std::vector<std::string> temp;
-			try {
-				if (bf.is_open())
+	void ChangeLibrariesPath() {
+		std::string t;
+		std::ifstream bf(m_par.at("BIPPAR"));
+		std::string current_string;
+		std::vector<std::string> temp;
+
+		if (bf.is_open())
+		{
+			while (!bf.eof()) {
+				getline(bf, current_string);
+				if (current_string.find("NAMCON") != -1)
 				{
-					while (!bf.eof()) {
-						getline(bf, current_string);
-						if (current_string.find("NAMCON") != -1)
-						{
-							temp.push_back("NAMCON='" + m_current_dir +
-								GetLibrary(current_string) + "',\n");
-						}
-						else
-							temp.push_back(current_string + "\n");
-					}
-					bf.close();
-					std::ofstream bf(m_par.at("BIPPAR"));
-					for (const auto & item : temp)
-						bf << item;
+					std::string val = "NAMCON='" + m_current_dir +
+						GetLibrary(current_string) + "',\n";
+					temp.push_back(val);
+					int k = 0;
 				}
 				else
-					std::cout << "Can't open bippar files" << std::endl;
+					temp.push_back(current_string + "\n");
 			}
-			catch (std::exception & ex) {
-				std::cout << ex.what() << std::endl;
-			}
-
 			bf.close();
+			std::ofstream bf(m_par.at("BIPPAR"));
+			for (const auto & item : temp)
+				bf << item;
 		}
-		catch (std::exception & ex)
-		{
-			std::cout << ex.what() << std::endl;
+		else {
+			t = ("Can't open bippar files\n");
+			ToConsoleS(t);
 		}
+
+
+		bf.close();
+
 	}
 
 	void Calculation(const std::string & t)
 	{
-		GetFilesList(m_tests_dir + t);
-		CreateFolders("");
-		CopyFiles(m_absoluteFileList, m_relativeFileList, "");
-		ChangeLibrariesPath();
-		int i_err = -1;
-		system("pause");
-		i_err = system("nostra.exe");
-		i_err == 0 ? (std::cout << "End of state\n\n") : (std::cout << GetLastError() << std::endl);
+		try {
+			GetFilesList(m_tests_dir + t);
+			CreateFolders("");
+			CopyFiles(m_absoluteFileList, m_relativeFileList, "");
+			ChangeLibrariesPath();
+			int i_err = -1;
+			ToConsoleS("... Try to start NOSTRA.exe\n");
+			i_err = system("nostra.exe");
+			std::string t1;
+			if (i_err != 0)
+				ToConsole(GetLastError());
+			else
+			{
+				t1 = "End of state";
+				ToConsoleS(t1);
+				ToConsoleS(t_ns);
+			}
+		}
+		catch (std::exception & exc){
+			ToConsoleS(exc.what());
+			Log();
+		}
 		Clear();
 	}
 
 	std::string GetLastWord(const std::string &stc) const
 	{
-		std::string r,s;
+		std::string r, s;
 		bool t = true;
-		for (int i = static_cast<int>(r.size()); i != -1; i--)
+		for (int i = stc.size() - 1; i != -1; i--)
 		{
 			if (t) {
 				if ((stc[i] != '\ ') && (stc[i] != '/') && (stc[i] != 92)) {
@@ -174,7 +204,7 @@ public:
 					t = false;
 			}
 		}
-		for (int i = static_cast<int>(r.size())-1; i !=-1; i--)
+		for (int i = r.size() - 1; i != -1; i--)
 		{
 			s += r[i];
 		}
@@ -182,7 +212,7 @@ public:
 		return s;
 	}
 
-	void FoldersReplacement(const std::string t) const
+	void FoldersReplacement(const std::string t)
 	{
 		CreateDir(m_result_folder_dir + "/" + t);
 		CreateDir(m_result_folder_dir + "/" + t + "/REZ");
@@ -193,24 +223,41 @@ public:
 
 	void DeleteFolder()
 	{
-		try {
 			std::string path = "REZ/";
 			std::filesystem::remove_all(path);
-		}
-		catch (std::exception & ex1) {
-			std::cout << ex1.what() << std::endl;
-		}
 	}
 
 	void CopyRes(const std::string t)
 	{
-		GetFilesList(m_current_dir+"REZ");
-		FoldersReplacement(t);
-		CopyFiles(m_absoluteFileList, m_relativeFileList, m_result_folder_dir + "/"+t + "/REZ/");
+		try {
+			GetFilesList(m_current_dir + "REZ");
+			FoldersReplacement(t);
+			CopyFiles(m_absoluteFileList, m_relativeFileList, m_result_folder_dir + "/" + t + "/REZ/");
 
 
-		DeleteFolder();
+			DeleteFolder();
+		}
+		catch (std::exception & exc_c){
+			ToConsoleS(exc_c.what());
+			Log();
+		}
 		Clear();
+	}
+
+	void Log()
+	{
+		std::ofstream ofs("autotest.log");
+		for (const auto & t : log)
+		{
+			ofs << t;
+		}
+		ofs.close();
+	}
+
+	std::vector<std::string> log;
+
+	~Tests() {
+		Log();
 	}
 
 private:
@@ -227,45 +274,53 @@ private:
 					m_tests_list.push_back(test_name);
 			}
 		}
-		else
-			std::cout << m_input_file_name << " is not opened!" << std::endl;
+		else {
+			ToConsoleS(m_input_file_name + " is not opened! (Fill container)\n");
+			
+		}
 	}
 
 	void CopyFiles(const std::vector<std::string> & source, const std::vector<std::string> & destination,
 		const std::string addictor) {
-
+		std::string t1;
+		ToConsoleS("Start copy files: \n");
 		for (unsigned int i = 0; i < source.size(); i++) {
 			std::string TU = destination[i];
 			std::transform(TU.begin(), TU.end(), TU.begin(), ::toupper);
 			std::string dest = addictor + destination[i];
 			int err_code = static_cast<int>(CopyFile(source[i].c_str(), dest.c_str(), FALSE));
 			if (err_code == 1) {
-				std::cout << std::fixed << std::setprecision(25) << destination[i] << " ";
-				std::cout << " ... OK";
+				t1 = dest + "... OK";
 				if (TU == "BIPPAR")
 					m_par["BIPPAR"] = destination[i];
 				if (TU.find("CONST") != -1)
 					m_par[TU] = destination[i];
 			}
 			else {
-				if (static_cast<int>(GetLastError()) == 5)
-					std::cout << "error " << std::fixed << std::setprecision(25) << source[i] << " is folder";
-				else
-					std::cout << "unknown error";
+				if (static_cast<int>(GetLastError()) == 5) {
+					t1="error when copy file " +source[i] + " - that is folder";
+				}
+				else {
+					t1= "unknown error";
+				}
 			}
-			std::cout << std::endl;
+			t1 += "\n";
+			ToConsoleS(t1);
 		}
 	}
 
 	std::string GetLibrary(const std::string & str) const {
+		std::string temp = str;
+		std::transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
 		for (auto & t : m_par)
 		{
 			std::string currentName = GetLastWord(t.second);
-			if (str.find(currentName) != -1)
+			std::transform(currentName.begin(), currentName.end(), currentName.begin(), ::toupper);
+			if (temp.find(currentName) != -1)
 				return t.second;
 		}
 
-		throw (std::invalid_argument("NOT FIND LIBRARY"));
+		throw (std::invalid_argument("!!!WARNING\nNOT FIND LIBRARY\n"+ str+"\n!!!\n"));
 		return "0";
 	}
 
@@ -277,12 +332,11 @@ private:
 		m_par.clear();
 	}
 
-	
 private:
 	std::string m_input_file_name;
 	std::string m_result_folder_dir;
 	std::string m_tests_dir;
-	
+	std::string t_ns = "\n";
 	// Current NOSTRA DIR
 	std::string m_current_dir;
 
@@ -294,4 +348,5 @@ private:
 	std::vector<std::string> m_absoluteFileList;
 	std::vector<std::string> m_relativeFileList;
 	std::map<std::string,std::string> m_par;
+	
 };
