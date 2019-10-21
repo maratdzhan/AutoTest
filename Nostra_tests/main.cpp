@@ -24,17 +24,9 @@ int main() {
 	std::string t1;
 	for (const auto & t : container)
 	{
-
-		test.ToConsoleS("BEGIN OF CALCULATING:\n");
-		test.ToConsoleS(GetTime());
-		test.ToConsoleS("\n");
-
 		test.Calculation(t);
 		test.CopyRes(t);
 		
-		test.ToConsoleS("END OF CALCULATING:\n");
-		test.ToConsoleS(GetTime());
-		test.ToConsoleS("\n######################################\n");
 	}
 
 //	test.Log();
