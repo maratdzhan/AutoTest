@@ -1,43 +1,49 @@
 #include "main.h"
 
-std::string GetTime() {
-	SYSTEMTIME st;
-	GetLocalTime(&st);
-	std::string date;
-	date =
-		std::to_string(st.wYear) + "-"
-		+ std::to_string(st.wMonth) + "-"
-		+ std::to_string(st.wDay) + " "
-		+ std::to_string(st.wHour) + ":"
-		+ std::to_string(st.wMinute) + ":"
-		+ std::to_string(st.wSecond) + "."
-		+ std::to_string(st.wMilliseconds);
-
-	return date;
-}
 
 int main() {
+
+	SYSTEMTIME st;
+	GetLocalTime(&st);
+
 	Tests test;
-	std::vector<std::string> container = test.GetTestsList();
-	
 
-	std::string t1;
-	for (const auto & t : container)
+	srand(st.wYear + st.wMonth + st.wDay + st.wHour + st.wMinute + st.wSecond);
+	std::string _uid = std::to_string((rand()));
+	int i = 0;
+	try {
+		if (test.IsInitialized()) {
+			std::vector<std::string> container = test.GetTestsList();
+			for (const auto& t : container)
+			{
+				std::cerr << "Test: ";
+				std::cerr << i++ << "/" << container.size() << std::endl;
+
+				test.Double(t, 1);
+				auto t1 = std::chrono::high_resolution_clock::now();
+				test.Calculation(t);
+
+				auto t2 = std::chrono::high_resolution_clock::now();
+				auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+				if ((duration / 1000000.) < 2) {
+					test.Double("nostra_runtime duration:", 3);
+					test.Double(std::to_string(duration / 1000000.), 4);
+					test.Double("Result Copying Skipped", 3);
+				}
+				else
+				{
+					test.CopyRes(t);
+				}
+				system("cls");
+				test.End(_uid);
+			}
+		}
+	}
+	catch (std::exception & some_error)
 	{
-
-		test.ToConsoleS("BEGIN OF CALCULATING:\n");
-		test.ToConsoleS(GetTime());
-		test.ToConsoleS("\n");
-
-		test.Calculation(t);
-		test.CopyRes(t);
-		
-		test.ToConsoleS("END OF CALCULATING:\n");
-		test.ToConsoleS(GetTime());
-		test.ToConsoleS("\n######################################\n");
+		std::cerr << some_error.what();
+		test.End(_uid);
 	}
 
-//	test.Log();
-//	system("pause");
 	return 0;
 }
